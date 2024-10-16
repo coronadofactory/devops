@@ -14,10 +14,10 @@
 
 echo "cf installer"
 
-
-if [ ! -d "~/bin" ]; then
+bin=`echo ~/bin`
+if [ ! -d "$bin" ]; then
   echo "Execute mkdir ~/bin"
-  echo "Execute add ~/bin in .bash_profile"
+  echo "Execute add ~/bin in .bash_profile or .zshrc"
   exit
 fi
 

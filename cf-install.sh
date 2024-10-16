@@ -9,3 +9,5 @@
 #
 
 echo "cf installer"
+curl -s https://raw.githubusercontent.com/coronadofactory/devops/refs/heads/main/cf-launch.sh -o /usr/local/bin/cf
+chmod 750 /usr/local/bin/cf

@@ -1,3 +1,7 @@
+#!/bin/sh
+
+
+
 #
 # cf Installer
 # 
@@ -9,5 +13,14 @@
 #
 
 echo "cf installer"
-curl -s https://raw.githubusercontent.com/coronadofactory/devops/refs/heads/main/cf-launch.sh -o /usr/local/bin/cf
-chmod 750 /usr/local/bin/cf
+
+
+if [ ! -d "~/bin" ]; then
+  echo "Execute mkdir ~/bin"
+  echo "Execute add ~/bin in .bash_profile"
+  exit
+fi
+
+
+curl -s https://raw.githubusercontent.com/coronadofactory/devops/refs/heads/main/cf-launch.sh -o ~/bin/cf
+chmod 750 ~/bin/cf

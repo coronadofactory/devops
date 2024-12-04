@@ -35,7 +35,7 @@ if [[ $cmd =~ $re ]]; then
    else
       re="(cookies|analytics|youtube)"
       if [[ $1 =~ $re ]]; then
-         curl -s https://raw.githubusercontent.com/coronadofactory/site-builder/refs/heads/main/cf.sh | sh -s $1
+         curl -s https://raw.githubusercontent.com/coronadofactory/site-builder/refs/heads/master/cf.sh | sh -s $1
       else
          echo "Unknown $1"
       fi

@@ -29,7 +29,7 @@ fi
 re="(install)"
 if [[ $cmd =~ $re ]]; then
 
-   re="(appia|backend|form|react|proxy)"
+   re="(react|webpack|appia|backend|form|proxy)"
    if [[ $1 =~ $re ]]; then
       curl -s https://raw.githubusercontent.com/coronadofactory/hexagonal/refs/heads/main/front/cf.sh | sh -s $1
    else

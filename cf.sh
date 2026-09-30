@@ -6,10 +6,12 @@ if [ "$(whoami)" != "root" ] ; then
 fi
 
 
+lib="/usr/local/lib/coronadofactory"
 
 re="(docker)"
 if [[ $1 =~ $re ]]; then
+    MODULE=$1
     shift
-    /usr/local/lib/coronadofactory/cf-devops-docker.sh "$@"
+    $lib/cf-devops-$MODULE.sh "$@"
     exit
 fi

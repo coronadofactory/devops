@@ -22,12 +22,12 @@ if [ "$(id -u)" -ne 0 ]; then
 elif [ -f /etc/os-release ]; then
     . /etc/os-release
 else
-    echo "❌ No se pudo identificar el sistema operativo."
+    echo " ❌ No se pudo identificar el sistema operativo."
     exit 1
 fi
 
-if [ ! -f ./docker.properties ]; then
-    echo "docker.properties not found"
+if [ ! -f ./cf.docker.properties ]; then
+    echo "cf.docker.properties not found"
     exit 1
 fi
 
@@ -44,11 +44,11 @@ esac
 # Extricto para produccióm
 set -eu
 
-MONGO_VERSION=`cat docker.properties | grep "mongodb=" | cut -d'=' -f2`
-MONGO_DATA_DIR=`cat docker.properties | grep "mongodir=" | cut -d'=' -f2`
-NGINX_HTML_FOLDER=`cat docker.properties | grep "nginxhtml=" | cut -d'=' -f2`
-NGINX_CERTS_DIR=`cat docker.properties | grep "nginxcerts=" | cut -d'=' -f2`
-EXPRESS_FOLDER=`cat docker.properties | grep "expressfolder=" | cut -d'=' -f2`
+MONGO_VERSION=`cat cf.docker.properties | grep "mongodb=" | cut -d'=' -f2`
+MONGO_DATA_DIR=`cat cf.docker.properties | grep "mongodir=" | cut -d'=' -f2`
+NGINX_HTML_FOLDER=`cat cf.docker.properties | grep "nginxhtml=" | cut -d'=' -f2`
+NGINX_CERTS_DIR=`cat cf.docker.properties | grep "nginxcerts=" | cut -d'=' -f2`
+EXPRESS_FOLDER=`cat cf.docker.properties | grep "expressfolder=" | cut -d'=' -f2`
 
 
 
@@ -109,7 +109,7 @@ case "$ID" in
 #            usermod -aG docker ec2-user
 
         else
-            echo "❌ Versión de Amazon Linux ($VERSION_ID) no soportada por este script."
+            echo " ❌ Versión de Amazon Linux ($VERSION_ID) no soportada por este script."
             exit 1
         fi
         ;;
@@ -147,12 +147,12 @@ case "$ID" in
         ;;
         
     *)
-        echo "❌ Sistema operativo no soportado: $ID"
+        echo " ❌ Sistema operativo no soportado: $ID"
         exit 1
         ;;
 esac
 
-echo "✅ Instalación completada. Cierra sesión y vuelve a entrar para aplicar los permisos de grupo."
+echo " ✅ Instalación completada. Cierra sesión y vuelve a entrar para aplicar los permisos de grupo."
 
 
 
@@ -164,15 +164,15 @@ fi
 # Comprobar si Docker ya está ejecutándose
 
 if [ "$CMD" = "run" ] && ! systemctl is-active --quiet docker; then
-    echo "⚠️ Docker no está corriendo. Intentando arrancarlo..."
+    echo " ⚠️ Docker no está corriendo. Intentando arrancarlo..."
     sudo systemctl start docker
     sudo systemctl status docker
     
     # Verificar si el arranque tuvo éxito
     if systemctl is-active --quiet docker; then
-        echo "✅ Docker se ha arrancado correctamente."
+        echo " ✅ Docker se ha arrancado correctamente."
     else
-        echo "❌ Error: No se pudo arrancar Docker."
+        echo " ❌ Error: No se pudo arrancar Docker."
         exit 1
     fi
 fi
@@ -182,7 +182,7 @@ fi
 # Crea la red de docker
 
 if [ "$CMD" = "run" ] && ! docker network inspect "$NETWORK_NAME" >/dev/null 2>&1; then
-    echo "🌐 Creando red Docker externa: $NETWORK_NAME..."
+    echo " 🌐 Creando red Docker externa: $NETWORK_NAME..."
     docker network create "$NETWORK_NAME"
 fi
 
@@ -193,11 +193,11 @@ container_dir() {
     DIR="$1"
 
     if [ -z "$DIR" ]; then
-        echo "❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo " ❌ Error: Debes indicar el nombre del contenedor." >&2
         return 1
     fi
 
-    echo "📁 Creando directorio persistente volumen externo: $DIR"
+    echo " 📁 Creando directorio persistente volumen externo: $DIR"
 
 }
 
@@ -206,29 +206,41 @@ container_start() {
     CONTAINER_NAME="$1"
 
     if [ -z "$CONTAINER_NAME" ]; then
-        echo "❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
+        echo " ❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
         return 1
     fi
 
     STATUS=$(docker inspect --format '{{.State.Running}}' "${CONTAINER_NAME}" 2>/dev/null || true)
 
     if [ -z "$STATUS" ]; then
-        echo "❌ Error crítico: El contenedor '${CONTAINER_NAME}' no existe." >&2
+        echo ""
+        echo " ❌ Error crítico: El contenedor '${CONTAINER_NAME}' no existe." >&2
+        echo ""
     elif [ "$STATUS" = "false" ]; then
-        echo "🚀 Arrancando ${CONTAINER_NAME}..."
+        echo ""
+        echo " 🚀 Arrancando ${CONTAINER_NAME}..."
+        echo ""
         docker start "${CONTAINER_NAME}"
         sleep 2
         FINAL_CHECK=$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME" 2>/dev/null || echo "false")
         if [ "$FINAL_CHECK" = "true" ]; then
-            echo "✅ '$CONTAINER_NAME' se ha iniciado con exito."
+        echo ""
+            echo " ✅ '$CONTAINER_NAME' se ha iniciado con exito."
+        echo ""
         else
-            echo "❌ Error crítico: El contenedor '$CONTAINER_NAME' falló al arrancar." >&2
+            echo ""
+            echo " ❌ Error crítico: El contenedor '$CONTAINER_NAME' falló al arrancar." >&2
             echo "--- Logs de "$CONTAINER_NAME" ---" >&2
             docker logs --tail 20 "$CONTAINER_NAME" >&2
+            echo ""
             exit 1
         fi
     else
-        echo "ℹ️ El contenedor '${CONTAINER_NAME}' ya está en ejecución."
+        echo ""
+        eche " El contenedor '${CONTAINER_NAME}' ya está en ejecución."
+        echo ""
     fi
 
 }
@@ -238,7 +250,9 @@ container_check() {
     CONTAINER_NAME="$1"
 
     if [ -z "$CONTAINER_NAME" ]; then
-        echo "❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
+        echo " ❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
         return 1
     fi
 
@@ -246,10 +260,14 @@ container_check() {
 
     FINAL_CHECK=$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME" 2>/dev/null || echo "false")
     if [ "$FINAL_CHECK" = "true" ]; then
-        echo "✅ '$CONTAINER_NAME' se ha iniciado con exito."
+        echo ""
+        echo " ✅ '$CONTAINER_NAME' se ha iniciado con exito."
+        echo ""
     else
-        echo "❌ Error crítico: El contenedor '$CONTAINER_NAME' falló al arrancar." >&2
+        echo ""
+        echo " ❌ Error crítico: El contenedor '$CONTAINER_NAME' falló al arrancar." >&2
         echo "--- Logs de '$CONTAINER_NAME' ---" >&2
+        echo ""
         docker logs --tail 20 "$CONTAINER_NAME" >&2
         exit 1
     fi
@@ -261,11 +279,15 @@ container_ok_message() {
     CONTAINER_NAME="$1"
 
     if [ -z "$CONTAINER_NAME" ]; then
-        echo "❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
+        echo " ❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
         return 1
     fi
 
-    echo "ℹ️ El contenedor '${CONTAINER_NAME}' ya está en ejecución."
+    echo ""
+    echo " El contenedor '${CONTAINER_NAME}' ya está en ejecución."
+    echo ""
 
 }
 
@@ -274,23 +296,33 @@ container_run_message() {
     CONTAINER_NAME="$1"
 
     if [ -z "$CONTAINER_NAME" ]; then
-        echo "❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
+        echo " ❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
         return 1
     fi
 
-    echo "🚀 Creando e iniciando el contenedor '${CONTAINER_NAME}'..."
+    echo ""
+    echo " 🚀 Creando e iniciando el contenedor '${CONTAINER_NAME}'..."
+    echo ""
+
 }
 
 container_build_message() {
 
     CONTAINER_NAME="$1"
+    IMAGE_NAME="$2"
 
     if [ -z "$CONTAINER_NAME" ]; then
-        echo "❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
+        echo " ❌ Error: Debes indicar el nombre del contenedor." >&2
+        echo ""
         return 1
     fi
 
-    echo "🔄 Construyendo la imagen '${EXPRESS_IMAGE_NAME}'..."
+    echo ""
+    echo " 🔄 Construyendo la imagen '${IMAGE_NAME}' en el contenedor '${CONTAINER_NAME}'..."
+    echo ""
 
 }
 
@@ -345,7 +377,12 @@ if [ "$CMD" = "run" ] && [ -n "${NGINX_HTML_FOLDER:-}" ]; then
     if [ -z "$STATUS" ]; then
         if [ -n "${NGINX_HTML_FOLDER:-}" ]; then
 
-            container_build_message "${CONTAINER_NAME}"
+            if [ ! -f "${NGINX_HTML_FOLDER}" ];then
+                echo "${NGINX_HTML_FOLDER} not found"
+                exit 1
+            fi
+
+            container_build_message "${CONTAINER_NAME}" "${NGINX_HTML_IMAGE_NAME}"
             docker build -t "${NGINX_HTML_IMAGE_NAME}" "${NGINX_HTML_FOLDER}"
 
             container_run_message "${CONTAINER_NAME}"
@@ -371,7 +408,7 @@ if [ "$CMD" = "run" ] && [ -n "${NGINX_HTML_FOLDER:-}" ]; then
     fi
 
 
-    # echo "🛑 Deteniendo y limpiando el contenedor "$NGINX_CONTAINER_NAME" ..."
+    # echo " 🛑 Deteniendo y limpiando el contenedor "$NGINX_CONTAINER_NAME" ..."
     # docker stop "$NGINX_CONTAINER_NAME" 2>/dev/null || true
     # docker rm "$NGINX_CONTAINER_NAME" 2>/dev/null || true
 
@@ -390,7 +427,7 @@ if [ "$CMD" = "run" ] && [ -n "${EXPRESS_FOLDER:-}" ]; then
 
     if [ -z "$STATUS" ]; then
 
-        container_build_message "${CONTAINER_NAME}"
+        container_build_message "${CONTAINER_NAME}" "${EXPRESS_IMAGE_NAME}"
         docker build -t "${EXPRESS_IMAGE_NAME}" "${EXPRESS_FOLDER}"
 
         container_run_message "${CONTAINER_NAME}"
@@ -438,7 +475,7 @@ case "$ID" in
             echo "sudo rm -rf /var/lib/docker /var/lib/containerd /etc/docker"
 
         else
-            echo "❌ Versión de Amazon Linux ($VERSION_ID) no soportada por este script."
+            echo " ❌ Versión de Amazon Linux ($VERSION_ID) no soportada por este script."
             exit 1
         fi
         ;;
@@ -456,7 +493,7 @@ case "$ID" in
         ;;
         
     *)
-        echo "❌ Sistema operativo no soportado: $ID"
+        echo " ❌ Sistema operativo no soportado: $ID"
         exit 1
         ;;
 esac

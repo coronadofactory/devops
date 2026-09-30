@@ -12,12 +12,7 @@
 # Date: 2024-10-03
 # Rev: 2026-09-28
 
-echo ""
 
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Por favor, ejecuta este script como root o usando sudo."
-  exit 1
-fi
 
 
 case "$1" in
@@ -25,6 +20,7 @@ case "$1" in
         CMD=$1
         ;;
     *)
+        echo ""
         echo "Invalid command: $1" >&2
         exit 1
         ;;
@@ -36,11 +32,19 @@ case "$2" in
         MODULE=$2
         ;;
     *)
+        echo ""
         echo "Invalid module $2 for command $1" >&2
         exit 1
         ;;
 esac
 
+
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo ""
+    echo "Por favor, ejecuta este script como root o usando sudo."
+    exit 1
+fi
 
 
 set -eu

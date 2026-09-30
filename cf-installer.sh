@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# cf-launch.sh
+# cf-installer.sh
 # 
 # Copyright (c) 1984-2026 Jose Garcia
 # Released under the MIT license
@@ -11,6 +11,8 @@
 #
 # Date: 2024-10-03
 # Rev: 2026-09-28
+
+echo ""
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Por favor, ejecuta este script como root o usando sudo."

@@ -1,16 +1,16 @@
 #!/bin/sh
 
+##
+## cf-installer.sh
+## 
+## Copyright (c) 1984-2026 Jose Garcia
+## Released under the MIT license
+## https://raw.githubusercontent.com/coronadofactory/hexagonal/refs/heads/main/LICENSE.txt
+##
+## Description: Scripts de descarga de cf commands en una maquina a dockerizar
 #
-# cf-installer.sh
-# 
-# Copyright (c) 1984-2026 Jose Garcia
-# Released under the MIT license
-# https://raw.githubusercontent.com/coronadofactory/hexagonal/refs/heads/main/LICENSE.txt
-#
-# Description: Scripts de descarga de cf commands en una maquina a dockerizar
-#
-# Date: 2024-10-03
-# Rev: 2026-09-28
+## Date: 2024-10-03
+## Rev: 2026-10-04
 
 
 
@@ -21,19 +21,24 @@ case "$1" in
         ;;
     *)
         echo ""
-        echo "Invalid command: $1" >&2
+        echo "Invalid command: $1"
         exit 1
         ;;
 esac
 
 
 case "$2" in
-    docker)
+    server)
         MODULE=$2
+        ;;
+    "")
+        echo ""
+        echo "No module spcified"
+        exit 1
         ;;
     *)
         echo ""
-        echo "Invalid module $2 for command $1" >&2
+        echo "Invalid module $2 for command $1"
         exit 1
         ;;
 esac
@@ -79,13 +84,16 @@ download() {
 
 
 
-if [ "$MODULE" = "docker" ]; then
+if [ "$MODULE" = "server" ]; then
 
    download cf.sh
    download cf-devops-docker.sh
+   download cf-devops-app.sh
 
     if [ ! -e "$bin/cf" ]; then
         ln -s $lib/cf.sh $bin/cf
     fi
+
+    mkdir /var/cf-inbox
 
 fi

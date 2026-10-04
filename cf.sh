@@ -8,7 +8,7 @@ fi
 
 lib="/usr/local/lib/coronadofactory"
 
-re="(docker)"
+re="(docker|app)"
 if [[ $1 =~ $re ]]; then
     MODULE=$1
     shift

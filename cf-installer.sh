@@ -88,11 +88,12 @@ download() {
 
 if [ "$MODULE" = "server" ]; then
 
-    download cf.sh "$bin"
+    download cf.sh "$lib"
     download cf-devops-docker.sh "$lib"
     download cf-devops-app.sh "$lib"
 
     if [ ! -e "$bin/cf" ]; then
+        mkdir -p $bin
         ln -s $lib/cf.sh $bin/cf
     fi
 

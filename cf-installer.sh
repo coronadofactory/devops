@@ -56,7 +56,9 @@ set -eu
 
 
 
-git="https://raw.githubusercontent.com/coronadofactory/devops/refs/heads/main"
+git1="https://raw.githubusercontent.com/coronadofactory/coronadofactory.github.io/refs/heads/master"
+git2="https://raw.githubusercontent.com/coronadofactory/devops/refs/heads/main"
+
 bin="/usr/local/bin/coronadofactory"
 lib="/usr/local/lib/coronadofactory"
 inbox="/var/cf-inbox"
@@ -64,23 +66,24 @@ inbox="/var/cf-inbox"
 
 download() {
 
-   FILE="$1"
-   DIR="$2"
+    FILE="$1"
+    GIT="$2"
+    DIR="$3"
 
-   URL="$git/$FILE"
-   DEST="$DIR/$FILE"
+    URL="$GIT/$FILE"
+    DEST="$DIR/$FILE"
 
-   mkdir -p $DIR
+    mkdir -p $DIR
 
-   if [ -f "$DEST" ]; then
+    if [ -f "$DEST" ]; then
         echo "File already exists: $DEST"
         return 1
-   elif ! curl -fsS "$URL" -o "$DEST"; then
-       echo "Error downloading $URL" >&2
-       exit 1
-   fi
+    elif ! curl -fsS "$URL" -o "$DEST"; then
+        echo "Error downloading $URL" >&2
+        exit 1
+    fi
 
-   chmod +x "$DEST"
+    chmod +x "$DEST"
 
 }
 
@@ -88,9 +91,9 @@ download() {
 
 if [ "$MODULE" = "server" ]; then
 
-    download cf.sh "$lib"
-    download cf-devops-docker.sh "$lib"
-    download cf-devops-app.sh "$lib"
+    download cf.sh "$git1" "$lib"
+    download cf-devops-docker.sh "$git2" "$lib"
+    download cf-devops-app.sh "$git2" "$lib"
 
     if [ ! -d "$bin" ]; then
         mkdir -p $bin

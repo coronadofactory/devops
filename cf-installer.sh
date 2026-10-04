@@ -92,8 +92,11 @@ if [ "$MODULE" = "server" ]; then
     download cf-devops-docker.sh "$lib"
     download cf-devops-app.sh "$lib"
 
-    if [ ! -e "$bin/cf" ]; then
+    if [ ! -d "$bin" ]; then
         mkdir -p $bin
+    fi
+
+    if [ ! -e "$bin/cf" ]; then
         ln -s $lib/cf.sh $bin/cf
     fi
 

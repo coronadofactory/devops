@@ -94,6 +94,9 @@ if [ "$MODULE" = "server" ]; then
         ln -s $lib/cf.sh $bin/cf
     fi
 
-    mkdir /var/cf-inbox
+    if [ ! -f "/var/cf-inbox" ]; then
+        mkdir /var/cf-inbox
+    fi
+
 
 fi

@@ -59,7 +59,7 @@ set -eu
 git="https://raw.githubusercontent.com/coronadofactory/devops/refs/heads/main"
 bin="/usr/local/bin/coronadofactory"
 lib="/usr/local/lib/coronadofactory"
-
+inbox="/var/cf-inbox"
 
 
 download() {
@@ -100,8 +100,8 @@ if [ "$MODULE" = "server" ]; then
         ln -s $lib/cf.sh $bin/cf
     fi
 
-    if [ ! -d "/var/cf-inbox" ]; then
-        mkdir /var/cf-inbox
+    if [ ! -d "$inbox" ]; then
+        mkdir "$inbox"
     fi
 
 

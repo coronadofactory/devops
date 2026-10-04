@@ -57,18 +57,20 @@ set -eu
 
 
 git="https://raw.githubusercontent.com/coronadofactory/devops/refs/heads/main"
-lib="/usr/local/lib/coronadofactory"
 bin="/usr/local/bin/coronadofactory"
+lib="/usr/local/lib/coronadofactory"
 
 
 
 download() {
 
    FILE="$1"
-   URL="$git/$FILE"
-   DEST="$lib/$FILE"
+   DIR="$2"
 
-   mkdir -p $lib
+   URL="$git/$FILE"
+   DEST="$DIR/$FILE"
+
+   mkdir -p $DIR
 
    if [ -f "$DEST" ]; then
         echo "File already exists: $DEST"
@@ -86,9 +88,9 @@ download() {
 
 if [ "$MODULE" = "server" ]; then
 
-    download cf.sh
-    download cf-devops-docker.sh
-    download cf-devops-app.sh
+    download cf.sh "$bin"
+    download cf-devops-docker.sh "$lib"
+    download cf-devops-app.sh "$lib"
 
     if [ ! -e "$bin/cf" ]; then
         ln -s $lib/cf.sh $bin/cf

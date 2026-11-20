@@ -88,3 +88,7 @@ echo "tar -xzf $DIR/$FILE -C $DEST"
 tar -xzf "$DIR/$FILE" -C "$DEST"
 
 echo "Extracted to $DEST"
+
+echo "Create user tomcat"
+sudo groupadd tomcat
+sudo usermod -aG tomcat tomcat
